@@ -22,12 +22,19 @@ def _update_project_completion(session: Session, project_id: int) -> None:
     session.add(project)
 
 
-def list_project_places(session: Session, project_id: int) -> list[ProjectPlace]:
+def list_project_places(
+    session: Session,
+    project_id: int,
+    offset: int = 0,
+    limit: int = 20,
+) -> list[ProjectPlace]:
     _get_project(session, project_id)
     statement = (
         select(ProjectPlace)
         .where(ProjectPlace.project_id == project_id)
         .order_by(col(ProjectPlace.id).desc())
+        .offset(offset)
+        .limit(limit)
     )
     return list(session.exec(statement).all())
 

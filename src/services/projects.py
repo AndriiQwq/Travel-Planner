@@ -7,8 +7,13 @@ from .art_api import ArtInstituteClient
 from .places import add_project_place
 
 
-def list_projects(session: Session) -> list[TravelProject]:
-    statement = select(TravelProject).order_by(col(TravelProject.id).desc())
+def list_projects(session: Session, offset: int = 0, limit: int = 20) -> list[TravelProject]:
+    statement = (
+        select(TravelProject)
+        .order_by(col(TravelProject.id).desc())
+        .offset(offset)
+        .limit(limit)
+    )
     return list(session.exec(statement).all())
 
 

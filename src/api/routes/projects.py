@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlmodel import Session
 
 from ...db.session import get_session
@@ -38,8 +38,12 @@ def create_project_endpoint(
 
 
 @router.get("", response_model=list[TravelProjectRead])
-def list_projects_endpoint(session: Session = Depends(get_session)) -> list[TravelProjectRead]:
-    projects = list_projects(session)
+def list_projects_endpoint(
+    offset: int = Query(default=0, ge=0),
+    limit: int = Query(default=20, ge=1, le=100),
+    session: Session = Depends(get_session),
+) -> list[TravelProjectRead]:
+    projects = list_projects(session, offset=offset, limit=limit)
     return [TravelProjectRead.model_validate(project) for project in projects]
 
 

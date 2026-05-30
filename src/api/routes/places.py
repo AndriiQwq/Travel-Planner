@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlmodel import Session
 
 from ...db.session import get_session
@@ -37,10 +37,12 @@ def create_project_place_endpoint(
 @router.get("", response_model=list[ProjectPlaceRead])
 def list_project_places_endpoint(
     project_id: int,
+    offset: int = Query(default=0, ge=0),
+    limit: int = Query(default=20, ge=1, le=100),
     session: Session = Depends(get_session),
 ) -> list[ProjectPlaceRead]:
     try:
-        places = list_project_places(session, project_id)
+        places = list_project_places(session, project_id, offset=offset, limit=limit)
         return [ProjectPlaceRead.model_validate(place) for place in places]
     except LookupError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc

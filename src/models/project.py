@@ -1,9 +1,12 @@
 from datetime import UTC, date, datetime
+
 from sqlalchemy import Column, DateTime, Text
 from sqlmodel import Field, Relationship, SQLModel
 
+
 def utc_now() -> datetime:
     return datetime.now(UTC)
+
 
 class TravelProject(SQLModel, table=True):
     __tablename__ = "travel_projects"

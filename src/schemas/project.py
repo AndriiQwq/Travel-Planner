@@ -1,6 +1,9 @@
 from datetime import date, datetime
+
 from pydantic import BaseModel, ConfigDict, Field, field_validator
+
 from .place import ProjectPlaceCreate, ProjectPlaceRead
+
 
 class TravelProjectCreate(BaseModel):
     name: str = Field(min_length=1, max_length=150)
@@ -26,6 +29,7 @@ class TravelProjectCreate(BaseModel):
             raise ValueError("places must not be empty when provided")
         return value
 
+
 class TravelProjectUpdate(BaseModel):
     name: str | None = Field(default=None, min_length=1, max_length=150)
     description: str | None = Field(default=None, max_length=5000)
@@ -41,6 +45,7 @@ class TravelProjectUpdate(BaseModel):
             raise ValueError("name cannot be blank")
         return value
 
+
 class TravelProjectRead(BaseModel):
     id: int
     name: str
@@ -51,6 +56,7 @@ class TravelProjectRead(BaseModel):
     updated_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
 
 class TravelProjectDetailRead(TravelProjectRead):
     places: list[ProjectPlaceRead] = Field(default_factory=list)

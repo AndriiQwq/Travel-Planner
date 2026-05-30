@@ -1,5 +1,7 @@
 from datetime import datetime
+
 from pydantic import BaseModel, ConfigDict, Field, field_validator
+
 
 class ProjectPlaceCreate(BaseModel):
     external_id: str = Field(min_length=1, max_length=64)
@@ -13,9 +15,11 @@ class ProjectPlaceCreate(BaseModel):
             raise ValueError("external_id cannot be blank")
         return value
 
+
 class ProjectPlaceUpdate(BaseModel):
     notes: str | None = Field(default=None, max_length=5000)
     visited: bool | None = None
+
 
 class ProjectPlaceRead(BaseModel):
     id: int

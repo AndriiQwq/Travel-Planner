@@ -68,9 +68,13 @@ def update_project(
 def delete_project(session: Session, project_id: int) -> None:
     project = get_project(session, project_id)
 
-    visited_count_statement = select(func.count()).select_from(ProjectPlace).where(
-        ProjectPlace.project_id == project_id,
-        ProjectPlace.visited.is_(True),
+    visited_count_statement = (
+        select(func.count())
+        .select_from(ProjectPlace)
+        .where(
+            ProjectPlace.project_id == project_id,
+            ProjectPlace.visited.is_(True),
+        )
     )
     visited_count = session.exec(visited_count_statement).one()
     if visited_count > 0:
@@ -82,9 +86,7 @@ def delete_project(session: Session, project_id: int) -> None:
 
 def update_project_completion(session: Session, project_id: int) -> None:
     project = get_project(session, project_id)
-    places = session.exec(
-        select(ProjectPlace).where(ProjectPlace.project_id == project_id)
-    ).all()
+    places = session.exec(select(ProjectPlace).where(ProjectPlace.project_id == project_id)).all()
 
     project.is_completed = bool(places) and all(place.visited for place in places)
     session.add(project)

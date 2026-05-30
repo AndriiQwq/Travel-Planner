@@ -1,7 +1,10 @@
 from datetime import datetime
+
 from sqlalchemy import Column, DateTime, ForeignKey, Text, UniqueConstraint
 from sqlmodel import Field, Relationship, SQLModel
+
 from .project import TravelProject, utc_now
+
 
 class ProjectPlace(SQLModel, table=True):
     __tablename__ = "project_places"

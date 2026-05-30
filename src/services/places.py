@@ -17,9 +17,7 @@ def _get_project(session: Session, project_id: int) -> TravelProject:
 
 def _update_project_completion(session: Session, project_id: int) -> None:
     project = _get_project(session, project_id)
-    places = session.exec(
-        select(ProjectPlace).where(ProjectPlace.project_id == project_id)
-    ).all()
+    places = session.exec(select(ProjectPlace).where(ProjectPlace.project_id == project_id)).all()
     project.is_completed = bool(places) and all(place.visited for place in places)
     session.add(project)
 
@@ -42,9 +40,7 @@ def get_project_place(session: Session, project_id: int, place_id: int) -> Proje
     )
     place = session.exec(statement).first()
     if place is None:
-        raise LookupError(
-            f"place with id={place_id} was not found in project id={project_id}"
-        )
+        raise LookupError(f"place with id={place_id} was not found in project id={project_id}")
     return place
 
 
@@ -57,8 +53,8 @@ def add_project_place(
 ) -> ProjectPlace:
     _get_project(session, project_id)
 
-    count_statement = select(func.count()).select_from(ProjectPlace).where(
-        ProjectPlace.project_id == project_id
+    count_statement = (
+        select(func.count()).select_from(ProjectPlace).where(ProjectPlace.project_id == project_id)
     )
     current_count = session.exec(count_statement).one()
     if current_count >= MAX_PROJECT_PLACES:

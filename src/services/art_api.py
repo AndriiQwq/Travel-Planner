@@ -9,25 +9,31 @@ class ArtInstituteClient:
         self.timeout_seconds = timeout_seconds
 
     def get_artwork(self, external_id: str) -> dict:
-        response = httpx.get(
-            f"{self.base_url}/artworks/{external_id}",
-            params={"fields": "id,title"},
-            timeout=self.timeout_seconds,
-        )
-        response.raise_for_status()
+        try:
+            response = httpx.get(
+                f"{self.base_url}/artworks/{external_id}",
+                params={"fields": "id,title"},
+                timeout=self.timeout_seconds,
+            )
+        except httpx.HTTPError as exc:
+            raise RuntimeError("failed to reach art institute api") from exc
+
+        if response.status_code == 404:
+            raise LookupError("external place does not exist in art institute api")
+        if response.status_code >= 400:
+            raise RuntimeError("art institute api returned an error")
+
         payload = response.json()
         data = payload.get("data")
         if not isinstance(data, dict):
-            raise ValueError("invalid response from art institute api")
+            raise RuntimeError("invalid response from art institute api")
         return data
 
     def validate_place_exists(self, external_id: str) -> bool:
         try:
             self.get_artwork(external_id)
-        except httpx.HTTPStatusError as exc:
-            if exc.response.status_code == 404:
-                return False
-            raise
+        except LookupError:
+            return False
         return True
 
 
